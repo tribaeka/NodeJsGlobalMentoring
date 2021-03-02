@@ -1,0 +1,17 @@
+{
+  "name": "nodejs-global-mentoring-program-2021",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://git.epam.com/yahor_hlushak/nodejs-global-mentoring-program-2021.git"
+  },
+  "keywords": [
+    "node",
+    "node",
+    "js"
+  ],
+  "author": "Yahor Hlushak <Yahor_Hlushak@epam.com>",
+  "license": "ISC"
+}
