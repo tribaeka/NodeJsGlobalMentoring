@@ -1,8 +1,10 @@
 {
   "name": "nodejs-global-mentoring-program-2021",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "scripts": {
+    "task-1-1": "nodemon task-1-1/index.js",
+    "task-1-2": "nodemon task-1-2/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://git.epam.com/yahor_hlushak/nodejs-global-mentoring-program-2021.git"
@@ -13,5 +15,11 @@
     "js"
   ],
   "author": "Yahor Hlushak <Yahor_Hlushak@epam.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "csvtojson": "2.0.10"
+  },
+  "devDependencies": {
+    "nodemon": "2.0.7"
+  }
 }
