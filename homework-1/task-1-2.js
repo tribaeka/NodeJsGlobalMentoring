@@ -1,10 +1,9 @@
-const path = require('path');
-const fs = require('fs');
-const csv = require('csvtojson');
-const { pipeline } = require('stream');
+import path from 'path';
+import fs from 'fs';
+import csv from 'csvtojson';
+import { pipeline } from 'stream';
 
-
-const csvFilePath = path.resolve(__dirname, 'csv/data.csv');
+const csvFilePath = path.resolve(__dirname, '../homework-1/csv/data.csv');
 const txtFilePath = path.resolve(__dirname, 'data.txt');
 
 const readStream = fs.createReadStream(csvFilePath);
@@ -22,10 +21,11 @@ const parseCsv = () => {
                         hasError = true;
                     }
                 })
-                if (!hasError) {
-                    console.log('data.txt created.');
-                }
             })
+
+            if (!hasError) {
+                console.log('data.txt created.');
+            }
         });
 };
 const parseCsvWithPipeline = () => {
