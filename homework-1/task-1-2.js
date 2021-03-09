@@ -3,8 +3,8 @@ import fs from 'fs';
 import csv from 'csvtojson';
 import { pipeline } from 'stream';
 
-const csvFilePath = path.resolve(__dirname, '../homework-1/csv/data.csv');
-const txtFilePath = path.resolve(__dirname, 'data.txt');
+const csvFilePath = path.resolve(__dirname, './../csv/data.csv');
+const txtFilePath = path.resolve(__dirname, './data.txt');
 
 const readStream = fs.createReadStream(csvFilePath);
 const writeStream = fs.createWriteStream(txtFilePath);
@@ -43,5 +43,6 @@ const parseCsvWithPipeline = () => {
     );
 };
 
-parseCsv();
+parseCsv(); // load full file into the RAM
+// parseCsvWithPipeline(); load file line by line
 
