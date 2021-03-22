@@ -1,8 +1,12 @@
 {
   "name": "nodejs-global-mentoring-program-2021",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "scripts": {
+    "task-1-1:build": "babel homework-1/task-1-1.js -d dist",
+    "task-1-2:build": "babel homework-1/task-1-2.js -d dist",
+    "task-1-1:start": "npm run task-1-1:build && nodemon dist/task-1-1.js",
+    "task-1-2:start": "npm run task-1-2:build && nodemon dist/task-1-2.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://git.epam.com/yahor_hlushak/nodejs-global-mentoring-program-2021.git"
@@ -13,5 +17,15 @@
     "js"
   ],
   "author": "Yahor Hlushak <Yahor_Hlushak@epam.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "csvtojson": "2.0.10"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.13.10",
+    "@babel/core": "7.13.10",
+    "@babel/node": "7.13.10",
+    "@babel/preset-env": "7.13.10",
+    "nodemon": "2.0.7"
+  }
 }
