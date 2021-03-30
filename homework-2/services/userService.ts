@@ -33,7 +33,6 @@ class UserService {
         const user = this.getUserById(userId);
         if (user) {
             user.isDeleted = true;
-            console.log(this.usersList);
         }
     }
 

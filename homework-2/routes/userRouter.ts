@@ -11,12 +11,12 @@ import bodyParser from "body-parser";
 
 const router: Router = Router();
 
-router.get('/user', getAllUsers);
-router.get('/user/:id', getUserById);
-router.get('/user/autoSuggest', getAutoSuggest);
-router.post('/user', bodyParser.json(), addUser);
-router.put('/user', bodyParser.json(), updateUser);
-router.delete('/user/:id', removeUser);
+router.get('/', getAllUsers);
+router.get('/:id', getUserById);
+router.post('/', bodyParser.json(), addUser);
+router.put('/', bodyParser.json(), updateUser);
+router.delete('/:id', removeUser);
+router.get('/auto-suggest', getAutoSuggest);
 
 export const userRouter = router;
 

@@ -25,9 +25,10 @@ export function getUserById(req: Request<IdParam>, res: Response): void {
     }
 }
 
-export function getAutoSuggest(req: Request<null, null, null, AutoSuggestReqQuery>, res: Response): void {
+export function getAutoSuggest(req: Request, res: Response): void {
     console.log(req.query);
-    res.send(UserService.getAutoSuggestUsers(req.query.query, req.query.limit))
+    //res.send(UserService.getAutoSuggestUsers(req.query.query, req.query.limit))
+    res.status(213).end();
 }
 
 export function addUser(req: Request<null, null, User>, res: Response): void {
