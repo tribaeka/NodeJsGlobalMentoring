@@ -31,3 +31,13 @@ export const DEFAULT_USER_DATA: User[] = [
         isDeleted: false
     }
 ];
+export const RES_STATUS_CODES = {
+    NOT_FOUND: 404,
+    CREATED: 201,
+    NO_CONTENT: 204
+};
+export const RES_MESSAGES = {
+    NOT_FOUND: 'Not Found',
+    CREATED: 'Created',
+    NO_CONTENT: 'No Content'
+}

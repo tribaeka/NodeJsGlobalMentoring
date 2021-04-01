@@ -1,13 +1,14 @@
 import { Request, Response} from 'express';
 import UserService  from '../services/userService';
 import { User } from "../interfaces/User";
+import { RES_MESSAGES, RES_STATUS_CODES } from "../config/constants";
 
 interface IdParam {
     id: string;
 }
 
 interface AutoSuggestReqQuery {
-    query: string;
+    loginSubstring: string;
     limit: number;
 }
 
@@ -21,19 +22,18 @@ export function getUserById(req: Request<IdParam>, res: Response): void {
     if (user) {
         res.send(user);
     } else {
-        res.status(404).send('Not found');
+        res.status(RES_STATUS_CODES.NOT_FOUND).send(RES_MESSAGES.NOT_FOUND);
     }
 }
 
-export function getAutoSuggest(req: Request, res: Response): void {
-    console.log(req.query);
-    //res.send(UserService.getAutoSuggestUsers(req.query.query, req.query.limit))
-    res.status(213).end();
+export function getAutoSuggest(req: Request<unknown, unknown, unknown, AutoSuggestReqQuery>, res: Response): void {
+    const autoSuggests = UserService.getAutoSuggestUsers(req.query.loginSubstring, req.query.limit);
+    res.send(autoSuggests);
 }
 
 export function addUser(req: Request<null, null, User>, res: Response): void {
     const userId = UserService.addUser(req.body);
-    res.status(201).send(userId);
+    res.status(RES_STATUS_CODES.CREATED).send(userId);
 }
 
 export function updateUser(req: Request<null, null, User>, res: Response): void {
@@ -41,14 +41,14 @@ export function updateUser(req: Request<null, null, User>, res: Response): void 
 
     if (UserService.isUserExists(user.id)) {
         UserService.updateUser(req.body);
-        res.status(204).end();
+        res.status(RES_STATUS_CODES.NO_CONTENT).end();
     } else {
         UserService.addUser(user);
-        res.status(201).end();
+        res.status(RES_STATUS_CODES.CREATED).end();
     }
 }
 
 export function removeUser(req: Request<IdParam>, res: Response): void {
     UserService.markUserAsDeleted(req.params.id);
-    res.status(200).end();
+    res.end();
 }

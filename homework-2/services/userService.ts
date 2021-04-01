@@ -36,23 +36,10 @@ class UserService {
         }
     }
 
-    getAutoSuggestUsers(query: string, limit: number): User[] {
+    getAutoSuggestUsers(loginSubstring: string, limit: number): User[] {
         return this.usersList
-            .sort(UserService.loginSubstringCompare)
-            .filter(user => user.login.includes(query))
+            .filter(user => user.login.includes(loginSubstring))
             .slice(0, limit);
-    }
-
-    private static loginSubstringCompare(a: User, b: User): number {
-        if (a.login < b.login) {
-            return  -1;
-        }
-
-        if (a.login > b.login) {
-            return 1;
-        }
-
-        return 0;
     }
 }
 
