@@ -2,6 +2,7 @@ import { Request, Response} from 'express';
 import UserService  from '../services/userService';
 import { User } from "../interfaces/User";
 import { RES_MESSAGES, RES_STATUS_CODES } from "../config/constants";
+import { validationResult } from "express-validator";
 
 interface IdParam {
     id: string;
@@ -12,11 +13,11 @@ interface AutoSuggestReqQuery {
     limit: number;
 }
 
-export function getAllUsers(req: Request, res: Response): void {
+export function getAllUsersHandler(req: Request, res: Response): void {
     res.send(UserService.getAllUsers());
 }
 
-export function getUserById(req: Request<IdParam>, res: Response): void {
+export function getUserByIdHandler(req: Request<IdParam>, res: Response): void {
     const user = UserService.getUserById(req.params.id);
 
     if (user) {
@@ -26,17 +27,23 @@ export function getUserById(req: Request<IdParam>, res: Response): void {
     }
 }
 
-export function getAutoSuggest(req: Request<unknown, unknown, unknown, AutoSuggestReqQuery>, res: Response): void {
+export function getAutoSuggestHandler(req: Request<unknown, unknown, unknown, AutoSuggestReqQuery>, res: Response): void {
     const autoSuggests = UserService.getAutoSuggestUsers(req.query.loginSubstring, req.query.limit);
     res.send(autoSuggests);
 }
 
-export function addUser(req: Request<null, null, User>, res: Response): void {
-    const userId = UserService.addUser(req.body);
-    res.status(RES_STATUS_CODES.CREATED).send(userId);
+export function addUserHandler(req: Request<Record<string, unknown>, unknown, User>, res: Response): void {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        res.status(RES_STATUS_CODES.BAD_REQUEST).send({ errors: errors.array() });
+    } else {
+        const userId = UserService.addUser(req.body);
+        res.status(RES_STATUS_CODES.CREATED).send(userId);
+    }
 }
 
-export function updateUser(req: Request<null, null, User>, res: Response): void {
+export function updateUserHandler(req: Request<unknown, unknown, User>, res: Response): void {
     const user = req.body;
 
     if (UserService.isUserExists(user.id)) {
@@ -48,7 +55,7 @@ export function updateUser(req: Request<null, null, User>, res: Response): void 
     }
 }
 
-export function removeUser(req: Request<IdParam>, res: Response): void {
+export function removeUserHandler(req: Request<IdParam>, res: Response): void {
     UserService.markUserAsDeleted(req.params.id);
     res.end();
 }
