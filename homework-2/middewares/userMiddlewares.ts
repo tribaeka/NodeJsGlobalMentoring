@@ -1,8 +1,8 @@
-import { Request, Response} from 'express';
+import { Request, Response } from 'express';
 import UserService  from '../services/userService';
-import { User } from "../interfaces/User";
-import { RES_MESSAGES, RES_STATUS_CODES } from "../config/constants";
+import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
+import httpStatus from "http-status";
 
 interface IdParam {
     id: string;
@@ -23,7 +23,7 @@ export function getUserByIdHandler(req: Request<IdParam>, res: Response): void {
     if (user) {
         res.send(user);
     } else {
-        res.status(RES_STATUS_CODES.NOT_FOUND).send(RES_MESSAGES.NOT_FOUND);
+        res.sendStatus(httpStatus.NOT_FOUND);
     }
 }
 
@@ -32,26 +32,25 @@ export function getAutoSuggestHandler(req: Request<unknown, unknown, unknown, Au
     res.send(autoSuggests);
 }
 
-export function addUserHandler(req: Request<Record<string, unknown>, unknown, User>, res: Response): void {
+export function addUserHandler(req: Request<Record<string, unknown>, unknown, IUser>, res: Response): void {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        res.status(RES_STATUS_CODES.BAD_REQUEST).send({ errors: errors.array() });
+        res.status(httpStatus.BAD_REQUEST).send({ errors: errors.array() });
     } else {
         const userId = UserService.addUser(req.body);
-        res.status(RES_STATUS_CODES.CREATED).send(userId);
+        res.status(httpStatus.CREATED).send(userId);
     }
 }
 
-export function updateUserHandler(req: Request<unknown, unknown, User>, res: Response): void {
+export function updateUserHandler(req: Request<unknown, unknown, IUser>, res: Response): void {
     const user = req.body;
 
     if (UserService.isUserExists(user.id)) {
-        UserService.updateUser(req.body);
-        res.status(RES_STATUS_CODES.NO_CONTENT).end();
+        UserService.updateUser(user);
+        res.send(user);
     } else {
-        UserService.addUser(user);
-        res.status(RES_STATUS_CODES.CREATED).end();
+        res.sendStatus(httpStatus.NOT_FOUND);
     }
 }
 

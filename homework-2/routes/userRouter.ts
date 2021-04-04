@@ -7,9 +7,8 @@ import {
     removeUserHandler,
     updateUserHandler
 } from '../middewares/userMiddlewares';
-import bodyParser from "body-parser";
 import { check } from 'express-validator';
-import UserService from '../services/userService';
+import { checkUserAge, checkUserByLogin } from "../helpers/userValidators";
 
 const PASSWORD_MATH_REGEXP = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
 
@@ -20,21 +19,19 @@ router.get('/', getAllUsersHandler);
 router.get('/:id', getUserByIdHandler);
 router.post(
     '/',
-    bodyParser.json(),
-    check('login').exists().notEmpty().custom(UserService.validateLogin),
+    check('login').exists().notEmpty().custom(checkUserByLogin),
     check('password').exists(),
     check('password').matches(PASSWORD_MATH_REGEXP),
-    check('age').exists().isNumeric().custom(UserService.validateAge),
+    check('age').exists().isNumeric().custom(checkUserAge),
     check('isDeleted').exists(),
     addUserHandler
 );
 router.put(
     '/',
-    bodyParser.json(),
-    check('login').exists().notEmpty().custom(UserService.validateLogin),
+    check('login').exists().notEmpty().custom(checkUserByLogin),
     check('password').exists(),
     check('password').matches(PASSWORD_MATH_REGEXP),
-    check('age').exists().isNumeric().custom(UserService.validateAge),
+    check('age').exists().isNumeric().custom(checkUserAge),
     check('isDeleted').exists(),
     updateUserHandler
 );
