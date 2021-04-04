@@ -4,11 +4,11 @@ import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
 import httpStatus from "http-status";
 
-interface IdParam {
+interface IIdParam {
     id: string;
 }
 
-interface AutoSuggestReqQuery {
+interface IAutoSuggestReqQuery {
     loginSubstring: string;
     limit: number;
 }
@@ -17,7 +17,7 @@ export function getAllUsersHandler(req: Request, res: Response): void {
     res.send(UserService.getAllUsers());
 }
 
-export function getUserByIdHandler(req: Request<IdParam>, res: Response): void {
+export function getUserByIdHandler(req: Request<IIdParam>, res: Response): void {
     const user = UserService.getUserById(req.params.id);
 
     if (user) {
@@ -27,7 +27,7 @@ export function getUserByIdHandler(req: Request<IdParam>, res: Response): void {
     }
 }
 
-export function getAutoSuggestHandler(req: Request<unknown, unknown, unknown, AutoSuggestReqQuery>, res: Response): void {
+export function getAutoSuggestHandler(req: Request<unknown, unknown, unknown, IAutoSuggestReqQuery>, res: Response): void {
     const autoSuggests = UserService.getAutoSuggestUsers(req.query.loginSubstring, req.query.limit);
     res.send(autoSuggests);
 }
@@ -54,7 +54,7 @@ export function updateUserHandler(req: Request<unknown, unknown, IUser>, res: Re
     }
 }
 
-export function removeUserHandler(req: Request<IdParam>, res: Response): void {
+export function removeUserHandler(req: Request<IIdParam>, res: Response): void {
     UserService.markUserAsDeleted(req.params.id);
     res.end();
 }
