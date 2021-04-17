@@ -20,7 +20,7 @@ const sequelize  = new Sequelize(
 );
 
 const User = userFactory(sequelize);
-console.log('db model log');
+
 export const db: IDB = {
     sequelize,
     User

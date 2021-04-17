@@ -13,7 +13,7 @@ class UserService {
     }
 
     async addUser(user: IUserAttrs): Promise<number> {
-        const existsByLogin = await db.User.findOne({ where: { login: user.login }})
+        const existsByLogin = await db.User.findOne({ where: { login: user.login } })
         if (!existsByLogin) {
             const createdUser = await db.User.create(user);
 
