@@ -3,11 +3,11 @@ import { userFactory } from "./userModel";
 import { IDB } from "../interfaces/IDB";
 
 const sequelize  = new Sequelize(
-    'nodejs_mentoring',
     'postgres',
-    'admin',
+    'postgres',
+    'postgres',
     {
-        port: 5432,
+        port: 5438,
         host: 'localhost',
         dialect: 'postgres',
         pool: {

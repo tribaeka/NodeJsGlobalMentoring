@@ -6,7 +6,8 @@
     "task-1-2:build": "babel homework-1/task-1-2.js -d dist",
     "task-1-1:start": "npm run task-1-1:build && nodemon dist/task-1-1.js",
     "task-1-2:start": "npm run task-1-2:build && nodemon dist/task-1-2.js",
-    "task-2": "nodemon homework-2/index.ts"
+    "start:server": "nodemon homework-2/index.ts",
+    "start:pg": "docker-compose up"
   },
   "repository": {
     "type": "git",
