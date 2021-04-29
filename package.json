@@ -6,7 +6,8 @@
     "task-1-2:build": "babel homework-1/task-1-2.js -d dist",
     "task-1-1:start": "npm run task-1-1:build && nodemon dist/task-1-1.js",
     "task-1-2:start": "npm run task-1-2:build && nodemon dist/task-1-2.js",
-    "task-2": "nodemon homework-2/index.ts"
+    "start:server": "nodemon homework-2/index.ts",
+    "start:pg": "docker-compose up"
   },
   "repository": {
     "type": "git",
@@ -22,9 +23,13 @@
   "dependencies": {
     "body-parser": "1.19.0",
     "csvtojson": "2.0.10",
+    "dotenv": "^8.2.0",
     "express": "4.17.1",
-    "express-validator": "^6.10.0",
-    "http-status": "^1.5.0",
+    "express-validator": "6.10.0",
+    "http-status": "1.5.0",
+    "pg": "8.5.1",
+    "pg-hstore": "2.3.3",
+    "sequelize": "6.6.2",
     "typescript": "4.2.3",
     "uuid": "8.3.2"
   },
@@ -33,12 +38,12 @@
     "@babel/core": "7.13.10",
     "@babel/node": "7.13.10",
     "@babel/preset-env": "7.13.10",
-    "@types/express": "^4.17.11",
-    "@types/node": "^14.14.36",
-    "@types/uuid": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "^4.19.0",
-    "@typescript-eslint/parser": "^4.19.0",
-    "eslint": "^7.22.0",
+    "@types/express": "4.17.11",
+    "@types/node": "14.14.36",
+    "@types/uuid": "8.3.0",
+    "@typescript-eslint/eslint-plugin": "4.19.0",
+    "@typescript-eslint/parser": "4.19.0",
+    "eslint": "7.22.0",
     "nodemon": "2.0.7",
     "ts-node": "9.1.1"
   }

@@ -1,92 +1,58 @@
-import { IUser } from "../interfaces/IUser";
-import { v4 as uuidv4 } from 'uuid';
+import { IUserAttrs } from "../interfaces/IUserAttrs";
+import { db } from "../models";
 
-const initialUsersList: IUser[] = [
-    {
-        id: '14f4e1a1-ff87-4f93-b01f-2293f82f1345',
-        login: 'user1query1',
-        password: 'user1',
-        age: 1,
-        isDeleted: false
-    },
-    {
-        id: 'cbe11495-1dc1-489b-9a1b-5d215e6501a9',
-        login: 'user2query12123123123',
-        password: 'user2',
-        age: 2,
-        isDeleted: false
-    },
-    {
-        id: 'fe1ed5a7-7c47-41fe-9248-f776bd706b18',
-        login: 'user3query123',
-        password: 'user3',
-        age: 3,
-        isDeleted: false
-    },
-    {
-        id: '4b4ba4ab-0f8c-4669-9aef-0bcf220dad8e',
-        login: 'user4',
-        password: 'user4',
-        age: 4,
-        isDeleted: false
-    }
-];
 
 class UserService {
-    private usersList: IUser[];
+    async getAllUsers(): Promise<IUserAttrs[]> {
+        const usersModel = await db.User.findAll();
 
-    constructor() {
-        this.usersList = initialUsersList;
+        return <IUserAttrs[]>usersModel.map(usersModel => usersModel.toJSON())
     }
 
-    getAllUsers(): IUser[] {
-        return this.usersList;
+    async getUserById(id: string): Promise<IUserAttrs | undefined> {
+        const userModel = await db.User.findByPk(id);
+
+        return <IUserAttrs>userModel?.toJSON();
     }
 
-    getUserById(id: string): IUser | null {
-        return this.usersList.find(user => user.id === id) || null;
+    async getUserByLogin(login: string): Promise<IUserAttrs | undefined> {
+        const user = await db.User.findOne({ where: { login } });
+
+        return <IUserAttrs>user?.toJSON();
     }
 
-    addUser(user: IUser): string {
-        user.id = user.id || uuidv4();
-        this.usersList.push(user);
+    async addUser(user: IUserAttrs): Promise<number> {
+        const createdUser = await db.User.create(user);
 
-        return user.id;
+        return createdUser.id;
     }
 
-    updateUser(user: IUser): void {
-        const targetIndex = this.usersList.findIndex(user => user.id === user.id);
-        this.usersList[targetIndex] = user;
+    updateUser(user: IUserAttrs): void {
+        db.User.update(user, { where: { id: user.id }})
     }
 
-    isUserExists(userId: string): boolean {
-        return !!this.usersList.find(user => user.id === userId);
+    async isUserExists(userId: string): Promise<boolean> {
+        const user = await this.getUserById(userId);
+
+        return !!user;
     }
 
-    markUserAsDeleted(userId: string): void {
-        const user = this.getUserById(userId);
-        if (user) {
-            user.isDeleted = true;
+    async markUserAsDeleted(userId: string): Promise<void> {
+        const userToDelete = await db.User.findByPk(userId);
+
+        if (userToDelete && !userToDelete.isDeleted) {
+            userToDelete.isDeleted = true;
+            userToDelete.save();
         }
     }
 
-    getAutoSuggestUsers(loginSubstring: string, limit: number): IUser[] {
-        return this.usersList
-            .sort(this.compareByLogin)
+    async getAutoSuggestUsers(loginSubstring: string, limit: number): Promise<IUserAttrs[]> {
+        const users = await this.getAllUsers();
+
+        return users
+            .sort((u1: IUserAttrs, u2: IUserAttrs) => u1.login.localeCompare(u2.login))
             .filter(user => user.login.includes(loginSubstring))
             .slice(0, limit);
-    }
-
-    private compareByLogin(u1: IUser, u2: IUser): number {
-        if ( u1.login < u2.login ){
-            return -1;
-        }
-
-        if ( u1.login > u2.login ){
-            return 1;
-        }
-
-        return 0;
     }
 }
 

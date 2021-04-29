@@ -1,1 +1,1 @@
-export const APP_PORT = 3000;
+export const DUPLICATE_USER_ERROR = 'Validation error user with this login already exists!';

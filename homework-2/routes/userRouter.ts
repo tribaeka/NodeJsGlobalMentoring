@@ -20,4 +20,3 @@ router.delete('/:id', removeUserHandler);
 
 export const userRouter = router;
 
-

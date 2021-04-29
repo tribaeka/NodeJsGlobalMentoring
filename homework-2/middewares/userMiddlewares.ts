@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import UserService  from '../services/userService';
-import { IUser } from "../interfaces/IUser";
+import { IUserAttrs } from "../interfaces/IUserAttrs";
 import { validationResult } from "express-validator";
 import httpStatus from "http-status";
+import { DUPLICATE_USER_ERROR } from "../config/constants";
 
 interface IIdParam {
     id: string;
@@ -13,12 +14,12 @@ interface IAutoSuggestReqQuery {
     limit: number;
 }
 
-export function getAllUsersHandler(req: Request, res: Response): void {
-    res.send(UserService.getAllUsers());
+export async function getAllUsersHandler(req: Request, res: Response): Promise<void> {
+    res.send(await UserService.getAllUsers());
 }
 
-export function getUserByIdHandler(req: Request<IIdParam>, res: Response): void {
-    const user = UserService.getUserById(req.params.id);
+export async function getUserByIdHandler(req: Request<IIdParam>, res: Response): Promise<void> {
+    const user = await UserService.getUserById(req.params.id);
 
     if (user) {
         res.send(user);
@@ -27,26 +28,42 @@ export function getUserByIdHandler(req: Request<IIdParam>, res: Response): void 
     }
 }
 
-export function getAutoSuggestHandler(req: Request<unknown, unknown, unknown, IAutoSuggestReqQuery>, res: Response): void {
-    const autoSuggests = UserService.getAutoSuggestUsers(req.query.loginSubstring, req.query.limit);
+export async function getAutoSuggestHandler(
+    req: Request<unknown, unknown, unknown, IAutoSuggestReqQuery>,
+    res: Response
+): Promise<void> {
+    const autoSuggests = await UserService.getAutoSuggestUsers(req.query.loginSubstring, req.query.limit);
     res.send(autoSuggests);
 }
 
-export function addUserHandler(req: Request<Record<string, unknown>, unknown, IUser>, res: Response): void {
+export async function addUserHandler(
+    req: Request<Record<string, unknown>, unknown, IUserAttrs>,
+    res: Response
+): Promise<void> {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
         res.status(httpStatus.BAD_REQUEST).send({ errors: errors.array() });
     } else {
-        const userId = UserService.addUser(req.body);
-        res.status(httpStatus.CREATED).send(userId);
+        const existedUser = await UserService.getUserByLogin(req.body.login)
+        if (existedUser) {
+            const userId = await UserService.addUser(req.body);
+            res.status(httpStatus.CREATED).send(userId.toString());
+        } else {
+            res.status(httpStatus.BAD_REQUEST).send({ errors: [DUPLICATE_USER_ERROR]})
+        }
+
     }
 }
 
-export function updateUserHandler(req: Request<unknown, unknown, IUser>, res: Response): void {
+export async function updateUserHandler(
+    req: Request<unknown, unknown, IUserAttrs>,
+    res: Response
+): Promise<void> {
     const user = req.body;
+    const isUserExist = await UserService.isUserExists(user.id.toString());
 
-    if (UserService.isUserExists(user.id)) {
+    if (isUserExist) {
         UserService.updateUser(user);
         res.send(user);
     } else {
