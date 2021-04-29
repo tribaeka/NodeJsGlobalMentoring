@@ -1,7 +1,8 @@
+import { config as dotenvConfig } from 'dotenv';
+dotenvConfig();
 import { createServer } from 'http';
 import express, { Application } from 'express';
 import { userRouter } from "./routes/userRouter";
-import { APP_PORT } from "./config/constants";
 import bodyParser from "body-parser";
 import { db } from "./models";
 
@@ -12,9 +13,10 @@ db.sequelize
         throw new Error('Can\' connect to db');
     });
 db.sequelize.sync();
-// todo push db into docker container
+
 const app: Application = express();
 const serverInstance = createServer(app);
+const { APP_PORT } = process.env;
 
 app.use(bodyParser.json())
 

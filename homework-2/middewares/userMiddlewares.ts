@@ -3,6 +3,7 @@ import UserService  from '../services/userService';
 import { IUserAttrs } from "../interfaces/IUserAttrs";
 import { validationResult } from "express-validator";
 import httpStatus from "http-status";
+import { DUPLICATE_USER_ERROR } from "../config/constants";
 
 interface IIdParam {
     id: string;
@@ -44,12 +45,14 @@ export async function addUserHandler(
     if (!errors.isEmpty()) {
         res.status(httpStatus.BAD_REQUEST).send({ errors: errors.array() });
     } else {
-        try {
+        const existedUser = await UserService.getUserByLogin(req.body.login)
+        if (existedUser) {
             const userId = await UserService.addUser(req.body);
             res.status(httpStatus.CREATED).send(userId.toString());
-        } catch (err) {
-            res.status(httpStatus.BAD_REQUEST).send({ errors: [err.message]})
+        } else {
+            res.status(httpStatus.BAD_REQUEST).send({ errors: [DUPLICATE_USER_ERROR]})
         }
+
     }
 }
 

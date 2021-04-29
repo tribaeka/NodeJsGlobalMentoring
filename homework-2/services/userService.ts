@@ -1,26 +1,30 @@
 import { IUserAttrs } from "../interfaces/IUserAttrs";
-import { IUserModel } from "../models/userModel";
 import { db } from "../models";
 
 
 class UserService {
-    getAllUsers(): Promise<IUserAttrs[]> {
-        return db.User.findAll()
+    async getAllUsers(): Promise<IUserAttrs[]> {
+        const usersModel = await db.User.findAll();
+
+        return <IUserAttrs[]>usersModel.map(usersModel => usersModel.toJSON())
     }
 
-    getUserById(id: string): Promise<IUserModel | null> {
-        return db.User.findByPk(id);
+    async getUserById(id: string): Promise<IUserAttrs | undefined> {
+        const userModel = await db.User.findByPk(id);
+
+        return <IUserAttrs>userModel?.toJSON();
+    }
+
+    async getUserByLogin(login: string): Promise<IUserAttrs | undefined> {
+        const user = await db.User.findOne({ where: { login } });
+
+        return <IUserAttrs>user?.toJSON();
     }
 
     async addUser(user: IUserAttrs): Promise<number> {
-        const existsByLogin = await db.User.findOne({ where: { login: user.login } })
-        if (!existsByLogin) {
-            const createdUser = await db.User.create(user);
+        const createdUser = await db.User.create(user);
 
-            return createdUser.id;
-        } else {
-            throw new Error('Validation error user with this login already exists!')
-        }
+        return createdUser.id;
     }
 
     updateUser(user: IUserAttrs): void {
@@ -34,7 +38,7 @@ class UserService {
     }
 
     async markUserAsDeleted(userId: string): Promise<void> {
-        const userToDelete = await this.getUserById(userId);
+        const userToDelete = await db.User.findByPk(userId);
 
         if (userToDelete && !userToDelete.isDeleted) {
             userToDelete.isDeleted = true;
@@ -46,21 +50,9 @@ class UserService {
         const users = await this.getAllUsers();
 
         return users
-            .sort(UserService.compareByLogin)
+            .sort((u1: IUserAttrs, u2: IUserAttrs) => u1.login.localeCompare(u2.login))
             .filter(user => user.login.includes(loginSubstring))
             .slice(0, limit);
-    }
-
-    private static compareByLogin(u1: IUserAttrs, u2: IUserAttrs): number {
-        if ( u1.login < u2.login ){
-            return -1;
-        }
-
-        if ( u1.login > u2.login ){
-            return 1;
-        }
-
-        return 0;
     }
 }
 
