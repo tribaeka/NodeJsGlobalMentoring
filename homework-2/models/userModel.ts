@@ -1,5 +1,5 @@
 import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
-import { IUserAttrs } from "../interfaces/IUserAttrs";
+import { IUserAttrs } from "../interfaces";
 
 export interface IUserModel extends Model<IUserAttrs>, IUserAttrs {}
 export class User extends Model<IUserModel, IUserAttrs> {}

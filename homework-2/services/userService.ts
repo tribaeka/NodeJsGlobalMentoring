@@ -1,12 +1,12 @@
-import { IUserAttrs } from "../interfaces/IUserAttrs";
+import { IUserAttrs } from "../interfaces";
 import { db } from "../models";
 
 
 class UserService {
     async getAllUsers(): Promise<IUserAttrs[]> {
-        const usersModel = await db.User.findAll();
+        const usersModels = await db.User.findAll();
 
-        return <IUserAttrs[]>usersModel.map(usersModel => usersModel.toJSON())
+        return <IUserAttrs[]>usersModels.map(usersModel => usersModel.toJSON())
     }
 
     async getUserById(id: string): Promise<IUserAttrs | undefined> {
@@ -16,9 +16,9 @@ class UserService {
     }
 
     async getUserByLogin(login: string): Promise<IUserAttrs | undefined> {
-        const user = await db.User.findOne({ where: { login } });
+        const userModel = await db.User.findOne({ where: { login } });
 
-        return <IUserAttrs>user?.toJSON();
+        return <IUserAttrs>userModel?.toJSON();
     }
 
     async addUser(user: IUserAttrs): Promise<number> {
