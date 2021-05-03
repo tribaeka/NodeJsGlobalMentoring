@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import GroupService from '../services/groupService';
 import httpStatus from "http-status";
-import { IdParam } from "../types/IdParam";
-import { GroupAttrs } from "../types";
+import { IdParam, GroupAttrs } from "../types";
 
 interface IAddUserToGroupReQuery {
     userId: string;

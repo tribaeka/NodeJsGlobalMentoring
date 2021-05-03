@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import UserService  from '../services/userService';
-import { UserAttrs } from "../types";
+import { UserAttrs, IdParam } from "../types";
 import { validationResult } from "express-validator";
 import httpStatus from "http-status";
-import { IdParam } from "../types/IdParam";
 
 interface IAutoSuggestReqQuery {
     loginSubstring: string;
