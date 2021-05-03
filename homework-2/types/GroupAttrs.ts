@@ -4,7 +4,7 @@ type Permission = 'READ'
     | 'SHARE'
     | 'UPLOAD_FILES';
 
-export type IGroupAttrs = {
+export type GroupAttrs = {
     id: number;
     name: string;
     permissions: Permission[];

@@ -1,8 +1,8 @@
 import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
-import { IGroupAttrs } from "../interfaces";
+import { GroupAttrs } from "../types";
 
-export interface IGroupModel extends Model<IGroupAttrs>, IGroupAttrs {}
-export class Group extends Model<IGroupModel, IGroupAttrs> {}
+export interface IGroupModel extends Model<GroupAttrs>, GroupAttrs {}
+export class Group extends Model<IGroupModel, GroupAttrs> {}
 
 export type GroupStatic = typeof Model & {
     new (values?: unknown, options?: BuildOptions): IGroupModel;

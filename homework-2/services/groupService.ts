@@ -1,37 +1,55 @@
-import { IGroupAttrs } from "../interfaces";
+import { GroupAttrs } from "../types";
 import { db } from "../models";
 
 class GroupService {
-    async getAllGroups(): Promise<IGroupAttrs[]> {
+    async getAllGroups(): Promise<GroupAttrs[]> {
         const groupModels = await db.Group.findAll()
 
-        return <IGroupAttrs[]>groupModels.map(groupModel => groupModel.toJSON());
+        return <GroupAttrs[]>groupModels.map(groupModel => groupModel.toJSON());
     }
 
-    async getGroupById(id: string): Promise<IGroupAttrs | undefined> {
+    async getGroupById(id: string): Promise<GroupAttrs | undefined> {
         const groupModel = await db.Group.findByPk(id);
 
-        return <IGroupAttrs>groupModel?.toJSON();
+        return <GroupAttrs>groupModel?.toJSON();
     }
 
-    async getGroupByName(name: string): Promise<IGroupAttrs | undefined> {
+    async getGroupByName(name: string): Promise<GroupAttrs | undefined> {
         const groupModel = await db.Group.findOne({ where: { name }});
 
-        return <IGroupAttrs>groupModel?.toJSON();
+        return <GroupAttrs>groupModel?.toJSON();
     }
 
-    async addGroup(group: IGroupAttrs): Promise<number> {
+    async addGroup(group: GroupAttrs): Promise<number> {
         const createdGroup = await db.Group.create(group);
 
         return createdGroup.id;
     }
 
-    updateGroup(group: IGroupAttrs): void {
+    updateGroup(group: GroupAttrs): void {
         db.Group.update(group, { where: { id: group.id } });
+    }
+
+    async isGroupExists(groupId: string): Promise<boolean> {
+        const group = await this.getGroupById(groupId);
+
+        return !!group;
     }
 
     deleteGroup(groupId: string): void {
         db.Group.destroy({ where: { id: groupId } });
+    }
+
+    async addUserToGroup(userId: string, groupId: string): Promise<void> {
+        const t = await db.sequelize.transaction();
+        try {
+            await db.UsersGroups.create({ userId, groupId }, { transaction: t });
+            t.commit();
+        } catch (err) {
+            console.error(err)
+            await t.rollback();
+        }
+
     }
 }
 

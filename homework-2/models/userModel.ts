@@ -1,8 +1,8 @@
 import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
-import { IUserAttrs } from "../interfaces";
+import { UserAttrs } from "../types";
 
-export interface IUserModel extends Model<IUserAttrs>, IUserAttrs {}
-export class User extends Model<IUserModel, IUserAttrs> {}
+export interface IUserModel extends Model<UserAttrs>, UserAttrs {}
+export class User extends Model<IUserModel, UserAttrs> {}
 
 export type UserStatic = typeof Model & {
     new (values?: unknown, options?: BuildOptions): IUserModel;

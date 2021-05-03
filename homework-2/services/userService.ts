@@ -1,33 +1,33 @@
-import { IUserAttrs } from "../interfaces";
+import { UserAttrs } from "../types";
 import { db } from "../models";
 
 
 class UserService {
-    async getAllUsers(): Promise<IUserAttrs[]> {
+    async getAllUsers(): Promise<UserAttrs[]> {
         const usersModels = await db.User.findAll();
 
-        return <IUserAttrs[]>usersModels.map(usersModel => usersModel.toJSON())
+        return <UserAttrs[]>usersModels.map(usersModel => usersModel.toJSON())
     }
 
-    async getUserById(id: string): Promise<IUserAttrs | undefined> {
+    async getUserById(id: string): Promise<UserAttrs | undefined> {
         const userModel = await db.User.findByPk(id);
 
-        return <IUserAttrs>userModel?.toJSON();
+        return <UserAttrs>userModel?.toJSON();
     }
 
-    async getUserByLogin(login: string): Promise<IUserAttrs | undefined> {
+    async getUserByLogin(login: string): Promise<UserAttrs | undefined> {
         const userModel = await db.User.findOne({ where: { login } });
 
-        return <IUserAttrs>userModel?.toJSON();
+        return <UserAttrs>userModel?.toJSON();
     }
 
-    async addUser(user: IUserAttrs): Promise<number> {
+    async addUser(user: UserAttrs): Promise<number> {
         const createdUser = await db.User.create(user);
 
         return createdUser.id;
     }
 
-    updateUser(user: IUserAttrs): void {
+    updateUser(user: UserAttrs): void {
         db.User.update(user, { where: { id: user.id }})
     }
 
@@ -46,11 +46,11 @@ class UserService {
         }
     }
 
-    async getAutoSuggestUsers(loginSubstring: string, limit: number): Promise<IUserAttrs[]> {
+    async getAutoSuggestUsers(loginSubstring: string, limit: number): Promise<UserAttrs[]> {
         const users = await this.getAllUsers();
 
         return users
-            .sort((u1: IUserAttrs, u2: IUserAttrs) => u1.login.localeCompare(u2.login))
+            .sort((u1: UserAttrs, u2: UserAttrs) => u1.login.localeCompare(u2.login))
             .filter(user => user.login.includes(loginSubstring))
             .slice(0, limit);
     }
