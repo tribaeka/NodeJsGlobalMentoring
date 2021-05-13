@@ -3,11 +3,6 @@ import GroupService from '../services/groupService';
 import httpStatus from "http-status";
 import { IdParam, GroupAttrs } from "../types";
 
-interface IAddUserToGroupReQuery {
-    userId: string;
-    groupId: string;
-}
-
 export async function getAllGroupsHandler(req: Request, res: Response): Promise<void> {
     res.send(await GroupService.getAllGroups());
 }
@@ -52,10 +47,11 @@ export function removeGroupHandler(req: Request<IdParam>, res: Response): void {
 }
 
 export async function addUserToGroup(
-    req: Request<unknown, unknown, unknown, IAddUserToGroupReQuery>,
+    req: Request<IdParam, unknown, IdParam>,
     res: Response
 ): Promise<void> {
-    const { userId, groupId } = req.query;
+    const { id: groupId } = req.params;
+    const { id: userId } = req.body;
     GroupService.addUserToGroup(userId, groupId);
     res.end();
 }

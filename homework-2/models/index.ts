@@ -1,6 +1,5 @@
 import { Sequelize } from "sequelize";
 import { userFactory } from "./userModel";
-import { DB } from "../types";
 import { groupFactory } from "./groupModel";
 import { usersGroupsFactory } from "./UsersGroupsModel";
 
@@ -29,7 +28,7 @@ const UsersGroups = usersGroupsFactory(sequelize);
 User.belongsToMany(Group, { through: UsersGroups });
 Group.belongsToMany(User, { through: UsersGroups });
 
-export const db: DB = {
+export const db = {
     sequelize,
     User,
     Group,

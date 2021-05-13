@@ -10,9 +10,9 @@ import {
 
 const router: Router = Router();
 
-router.get('/add-user-to-group', addUserToGroup);
 router.get('/', getAllGroupsHandler);
 router.get('/:id', getGroupByIdHandler);
+router.post('/:id/user', addUserToGroup);
 router.post('/', addGroupHandler);
 router.put('/', updateGroupHandler);
 router.delete('/:id', removeGroupHandler);
