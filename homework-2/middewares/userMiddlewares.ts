@@ -1,13 +1,8 @@
 import { Request, Response } from 'express';
 import UserService  from '../services/userService';
-import { IUserAttrs } from "../interfaces/IUserAttrs";
+import { UserAttrs, IdParam } from "../types";
 import { validationResult } from "express-validator";
 import httpStatus from "http-status";
-import { DUPLICATE_USER_ERROR } from "../config/constants";
-
-interface IIdParam {
-    id: string;
-}
 
 interface IAutoSuggestReqQuery {
     loginSubstring: string;
@@ -18,7 +13,7 @@ export async function getAllUsersHandler(req: Request, res: Response): Promise<v
     res.send(await UserService.getAllUsers());
 }
 
-export async function getUserByIdHandler(req: Request<IIdParam>, res: Response): Promise<void> {
+export async function getUserByIdHandler(req: Request<IdParam>, res: Response): Promise<void> {
     const user = await UserService.getUserById(req.params.id);
 
     if (user) {
@@ -37,7 +32,7 @@ export async function getAutoSuggestHandler(
 }
 
 export async function addUserHandler(
-    req: Request<Record<string, unknown>, unknown, IUserAttrs>,
+    req: Request<Record<string, unknown>, unknown, UserAttrs>,
     res: Response
 ): Promise<void> {
     const errors = validationResult(req);
@@ -45,19 +40,13 @@ export async function addUserHandler(
     if (!errors.isEmpty()) {
         res.status(httpStatus.BAD_REQUEST).send({ errors: errors.array() });
     } else {
-        const existedUser = await UserService.getUserByLogin(req.body.login)
-        if (existedUser) {
-            const userId = await UserService.addUser(req.body);
-            res.status(httpStatus.CREATED).send(userId.toString());
-        } else {
-            res.status(httpStatus.BAD_REQUEST).send({ errors: [DUPLICATE_USER_ERROR]})
-        }
-
+        const userId = await UserService.addUser(req.body);
+        res.status(httpStatus.CREATED).send(userId.toString());
     }
 }
 
 export async function updateUserHandler(
-    req: Request<unknown, unknown, IUserAttrs>,
+    req: Request<unknown, unknown, UserAttrs>,
     res: Response
 ): Promise<void> {
     const user = req.body;
@@ -71,7 +60,7 @@ export async function updateUserHandler(
     }
 }
 
-export function removeUserHandler(req: Request<IIdParam>, res: Response): void {
+export function removeUserHandler(req: Request<IdParam>, res: Response): void {
     UserService.markUserAsDeleted(req.params.id);
     res.end();
 }

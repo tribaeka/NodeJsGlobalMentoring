@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import { userFactory } from "./userModel";
-import { IDB } from "../interfaces/IDB";
+import { groupFactory } from "./groupModel";
+import { usersGroupsFactory } from "./UsersGroupsModel";
 
 const { DB_NAME, DB_USER, DB_PASS, DB_PORT, DB_HOST} = process.env;
 const sequelize  = new Sequelize(
@@ -21,8 +22,15 @@ const sequelize  = new Sequelize(
 );
 
 const User = userFactory(sequelize);
+const Group = groupFactory(sequelize);
+const UsersGroups = usersGroupsFactory(sequelize);
 
-export const db: IDB = {
+User.belongsToMany(Group, { through: UsersGroups });
+Group.belongsToMany(User, { through: UsersGroups });
+
+export const db = {
     sequelize,
-    User
+    User,
+    Group,
+    UsersGroups
 }

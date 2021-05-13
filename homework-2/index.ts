@@ -2,7 +2,7 @@ import { config as dotenvConfig } from 'dotenv';
 dotenvConfig();
 import { createServer } from 'http';
 import express, { Application } from 'express';
-import { userRouter } from "./routes/userRouter";
+import { groupRouter, userRouter } from "./routes";
 import bodyParser from "body-parser";
 import { db } from "./models";
 
@@ -21,5 +21,6 @@ const { APP_PORT } = process.env;
 app.use(bodyParser.json())
 
 app.use('/user', userRouter);
+app.use('/group', groupRouter);
 
 serverInstance.listen(APP_PORT, () => console.log(`App is listening on port ${APP_PORT}!`));
