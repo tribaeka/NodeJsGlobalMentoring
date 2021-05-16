@@ -1,6 +1,6 @@
 import { createLogger, format, transports } from 'winston';
 import { LOGGER_DEFAULT_FIELDS, LOGGING_LEVELS, LOGGING_MESSAGES } from "../config/loggerConstants";
-import { Request } from "express";
+import { Request, Response } from "express";
 
 class LogService {
     private logger;
@@ -36,6 +36,22 @@ class LogService {
             method,
             path,
             query,
+            ...LOGGER_DEFAULT_FIELDS
+        });
+    }
+
+    logResponseInfo(req: Request, res: Response, executionTime: number): void {
+        const { method, path, query } = req;
+        const { status } = res;
+
+        this.logger.log({
+            level: LOGGING_LEVELS.INFO,
+            message: LOGGING_MESSAGES.COMMON_RESPONSE_MESSAGE,
+            method,
+            path,
+            query,
+            status,
+            executionTime: `${executionTime} ms`,
             ...LOGGER_DEFAULT_FIELDS
         });
     }

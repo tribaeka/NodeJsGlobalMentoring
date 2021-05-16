@@ -5,10 +5,11 @@ import express, { Application } from 'express';
 import { groupRouter, userRouter } from "./routes";
 import bodyParser from "body-parser";
 import { db } from "./models";
-import { logMiddleware } from "./middewares/logMiddleware";
+import { initialLogMiddleware } from "./middewares/initialLogMiddleware";
 import { errorHandler } from "./middewares/errorMiddleware";
 import LogService from "./services/logService";
 import { LOGGING_LEVELS } from "./config/loggerConstants";
+import { executionTimeLogMiddleware } from "./middewares/executionTimeLogMiddleware";
 
 db.sequelize
     .authenticate()
@@ -23,10 +24,12 @@ const serverInstance = createServer(app);
 const { APP_PORT } = process.env;
 
 app.use(bodyParser.json())
+app.use(initialLogMiddleware);
+app.use(executionTimeLogMiddleware);
 
-app.use(logMiddleware);
 app.use('/user', userRouter);
 app.use('/group', groupRouter);
+
 app.use(errorHandler);
 
 process.on('uncaughtException’', err => LogService.log(LOGGING_LEVELS.ERROR, err.message));

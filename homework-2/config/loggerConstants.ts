@@ -14,7 +14,8 @@ export const LOGGING_LEVELS = {
 };
 
 export const LOGGING_MESSAGES = {
-    COMMON_REQUEST_INFO: 'Server receives request'
+    COMMON_REQUEST_INFO: 'Server receives request',
+    COMMON_RESPONSE_MESSAGE: 'Server sends response'
 };
 
 export const METHOD_NAMES = {
