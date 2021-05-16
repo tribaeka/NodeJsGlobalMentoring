@@ -16,3 +16,18 @@ export const LOGGING_LEVELS = {
 export const LOGGING_MESSAGES = {
     COMMON_REQUEST_INFO: 'Server receives request'
 };
+
+export const METHOD_NAMES = {
+    GET_USERS: 'getAllUsersHandler',
+    GET_USER: 'getUserByIdHandler',
+    ADD_USER: 'addUserHandler',
+    UPDATE_USER: 'updateUserHandler',
+    DELETE_USER: 'removeUserHandler',
+    USER_AUTO_SUGGEST: 'getAutoSuggestHandler',
+    GET_GROUPS: 'getAllGroupsHandler',
+    GET_GROUP: 'getGroupByIdHandler',
+    ADD_GROUP: 'addGroupHandler',
+    UPDATE_GROUPS: 'updateGroupHandler',
+    DELETE_GROUPS: 'removeGroupHandler',
+    ADD_USER_TO_GROUP: 'addUserToGroup'
+};

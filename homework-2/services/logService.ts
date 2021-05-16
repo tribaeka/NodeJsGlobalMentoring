@@ -29,12 +29,24 @@ class LogService {
 
     logRequestInfo(req: Request): void {
         const { method, path, query } = req;
+
         this.logger.log({
             level: LOGGING_LEVELS.INFO,
             message: LOGGING_MESSAGES.COMMON_REQUEST_INFO,
             method,
             path,
-            query
+            query,
+            ...LOGGER_DEFAULT_FIELDS
+        });
+    }
+
+    logRequestError(message: string, methodName: string, args: unknown): void {
+        this.logger.log({
+            level: LOGGING_LEVELS.ERROR,
+            message,
+            methodName,
+            args,
+            ...LOGGER_DEFAULT_FIELDS
         });
     }
 }
