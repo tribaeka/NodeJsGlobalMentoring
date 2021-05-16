@@ -1,19 +1,20 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import GroupService from '../services/groupService';
 import httpStatus from "http-status";
 import { IdParam, GroupAttrs } from "../types";
+import { HttpError } from "../errors/HttpError";
 
 export async function getAllGroupsHandler(req: Request, res: Response): Promise<void> {
     res.send(await GroupService.getAllGroups());
 }
 
-export async function getGroupByIdHandler(req: Request<IdParam>, res: Response): Promise<void> {
+export async function getGroupByIdHandler(req: Request<IdParam>, res: Response, next: NextFunction): Promise<void> {
     const group = await GroupService.getGroupById(req.params.id);
 
     if (group) {
         res.send(group);
     } else {
-        res.sendStatus(httpStatus.NOT_FOUND);
+        next(new HttpError(httpStatus["404_NAME"], httpStatus["404_MESSAGE"], httpStatus.NOT_FOUND));
     }
 }
 
@@ -28,7 +29,8 @@ export async function addGroupHandler(
 
 export async function updateGroupHandler(
     req: Request<unknown, unknown, GroupAttrs>,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<void> {
     const group = req.body;
     const isGroupExists = await GroupService.isGroupExists(group.id.toString());
@@ -37,7 +39,7 @@ export async function updateGroupHandler(
         GroupService.updateGroup(group);
         res.send(group);
     } else {
-        res.sendStatus(httpStatus.NOT_FOUND);
+        next(new HttpError(httpStatus["404_NAME"], httpStatus["404_MESSAGE"], httpStatus.NOT_FOUND));
     }
 }
 

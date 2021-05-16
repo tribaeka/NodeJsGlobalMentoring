@@ -6,6 +6,9 @@ import { groupRouter, userRouter } from "./routes";
 import bodyParser from "body-parser";
 import { db } from "./models";
 import { logMiddleware } from "./middewares/logMiddleware";
+import { errorHandler } from "./middewares/errorMiddleware";
+import LogService from "./services/logService";
+import { LOGGING_LEVELS } from "./config/loggerConstants";
 
 db.sequelize
     .authenticate()
@@ -24,5 +27,10 @@ app.use(bodyParser.json())
 app.use(logMiddleware);
 app.use('/user', userRouter);
 app.use('/group', groupRouter);
+app.use(errorHandler);
+
+process.on('uncaughtException’', err => LogService.log(LOGGING_LEVELS.ERROR, err.message));
+process.on('unhandledRejection’', err => LogService.log(LOGGING_LEVELS.ERROR, err.message));
+
 
 serverInstance.listen(APP_PORT, () => console.log(`App is listening on port ${APP_PORT}!`));
