@@ -3,7 +3,8 @@ import { userFactory } from "./userModel";
 import { groupFactory } from "./groupModel";
 import { usersGroupsFactory } from "./UsersGroupsModel";
 
-const { DB_NAME, DB_USER, DB_PASS, DB_PORT, DB_HOST} = process.env;
+const { DB_NAME, DB_USER, DB_PASS, DB_PORT, DB_HOST } = process.env;
+const isLoggingEnabled = process.env.ENABLE_SEQUELIZE_LOGGING === 'true';
 const sequelize  = new Sequelize(
     DB_NAME as string,
     DB_USER as string,
@@ -17,7 +18,8 @@ const sequelize  = new Sequelize(
             max: 5,
             acquire: 30000,
             idle: 10000,
-        }
+        },
+        logging: isLoggingEnabled
     }
 );
 
