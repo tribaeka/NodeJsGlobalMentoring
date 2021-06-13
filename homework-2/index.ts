@@ -2,7 +2,8 @@ import { config as dotenvConfig } from 'dotenv';
 dotenvConfig();
 import { createServer } from 'http';
 import express, { Application } from 'express';
-import { groupRouter, userRouter } from "./routes";
+import cors from "cors";
+import { authRouter, groupRouter, userRouter } from "./routes";
 import bodyParser from "body-parser";
 import { db } from "./models";
 import { initialLogMiddleware } from "./middewares/initialLogMiddleware";
@@ -22,11 +23,17 @@ db.sequelize.sync();
 const app: Application = express();
 const serverInstance = createServer(app);
 const { APP_PORT } = process.env;
+const corsOptions = {
+    origin: `http://localhost:${APP_PORT}`,
+    optionsSuccessStatus: 200
+}
 
+app.use(cors(corsOptions))
 app.use(bodyParser.json())
 app.use(initialLogMiddleware);
 app.use(executionTimeLogMiddleware);
 
+app.use('/', authRouter);
 app.use('/user', userRouter);
 app.use('/group', groupRouter);
 
