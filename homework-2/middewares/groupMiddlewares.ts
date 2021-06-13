@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import GroupService from '../services/groupService';
 import httpStatus from "http-status";
-import { IdParam, GroupAttrs } from "../types";
+import { IdParam, GroupAttrs, GroupReqAttrs } from "../types";
 import { HttpError } from "../errors/HttpError";
 import LogService from "../services/logService";
 import { METHOD_NAMES } from "../config/loggerConstants";
@@ -31,7 +31,7 @@ export async function getGroupByIdHandler(req: Request<IdParam>, res: Response, 
 }
 
 export async function addGroupHandler(
-    req: Request<unknown, unknown, GroupAttrs>,
+    req: Request<unknown, unknown, GroupReqAttrs>,
     res: Response,
     next: NextFunction
 ): Promise<void> {
@@ -76,7 +76,7 @@ export function removeGroupHandler(req: Request<IdParam>, res: Response, next: N
     }
 }
 
-export async function addUserToGroup(
+export async function addUserToGroupHandler(
     req: Request<IdParam, unknown, IdParam>,
     res: Response,
     next: NextFunction

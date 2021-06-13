@@ -1,4 +1,4 @@
-enum Permission {
+export enum Permission {
     READ = 'READ',
     WRITE = 'WRITE',
     DELETE = 'DELETE',
@@ -11,3 +11,5 @@ export type GroupAttrs = {
     name: string;
     permissions: Permission[];
 }
+
+export type GroupReqAttrs = Omit<GroupAttrs, 'id'>
