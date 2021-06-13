@@ -21,6 +21,12 @@ class UserService {
         return <UserAttrs>userModel?.toJSON();
     }
 
+    async getAuthenticatedUser(login: string, password: string): Promise<UserAttrs | undefined> {
+        const userModel = await db.User.findOne({ where: { login, password, isDeleted: false } });
+
+        return <UserAttrs>userModel?.toJSON();
+    }
+
     async addUser(user: UserAttrs): Promise<number> {
         const createdUser = await db.User.create(user);
 

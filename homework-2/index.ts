@@ -23,8 +23,12 @@ db.sequelize.sync();
 const app: Application = express();
 const serverInstance = createServer(app);
 const { APP_PORT } = process.env;
+const corsOptions = {
+    origin: `http://localhost:${APP_PORT}`,
+    optionsSuccessStatus: 200
+}
 
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(bodyParser.json())
 app.use(initialLogMiddleware);
 app.use(executionTimeLogMiddleware);

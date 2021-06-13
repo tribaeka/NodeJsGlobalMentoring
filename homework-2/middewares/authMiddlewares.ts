@@ -3,6 +3,7 @@ import { sign, verify } from "jsonwebtoken"
 import httpStatus from "http-status";
 import { HttpError } from "../errors/HttpError";
 import UserService  from '../services/userService';
+import { AUTH_HEADER_NAME } from "../config/constants";
 
 interface IAuthReqBody {
     login: string;
@@ -13,7 +14,7 @@ const { JWT_SECRET } = process.env;
 
 export async function login(req: Request<unknown, unknown, IAuthReqBody>, res: Response, next: NextFunction): Promise<void> {
     const { login, password } = req.body;
-    const user = await UserService.getUserByLogin(login);
+    const user = await UserService.getAuthenticatedUser(login, password);
 
     if (user === undefined || user.password !== password || user.isDeleted) {
         next(new HttpError(httpStatus["403_NAME"], httpStatus["403_MESSAGE"], httpStatus.FORBIDDEN));
@@ -25,7 +26,7 @@ export async function login(req: Request<unknown, unknown, IAuthReqBody>, res: R
 }
 
 export function protectedMiddleware(req: Request, res: Response, next: NextFunction): void {
-    const token = req.headers['x-access-token'] as string;
+    const token = req.headers[AUTH_HEADER_NAME] as string;
 
     if (token) {
         verify(token, JWT_SECRET as string, (err) => {
