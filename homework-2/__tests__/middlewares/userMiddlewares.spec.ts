@@ -11,8 +11,21 @@ import UserService from './../../services/userService';
 import { db } from "../../models";
 import { AutoSuggestReqQuery, IdParam, UserAttrs, UserReqAttrs } from "../../types";
 
+jest.mock('../../models', () => ({
+    db: {
+        ['User']: {
+            findAll: jest.fn().mockImplementation(() => []),
+            findByPk: jest.fn().mockImplementation(() => ({ toJSON: () => ({ id: '' })})),
+            findOne: jest.fn(),
+            create: jest.fn().mockImplementation(() => ({ id: '' })),
+            update: jest.fn()
+        }
+    }
+}))
 
 describe('User middlewares', () => {
+    afterEach(() => jest.clearAllMocks());
+
     describe('getAllUsersHandler', () => {
         let mockRequest: Partial<Request>;
         let mockResponse: Partial<Response>;
@@ -29,6 +42,7 @@ describe('User middlewares', () => {
             const getAllUsersSpy = jest.spyOn(UserService, 'getAllUsers');
 
             await getAllUsersHandler(mockRequest as Request, mockResponse as Response, nextFunction);
+
             expect(getAllUsersSpy).toHaveBeenCalled();
         });
 
@@ -36,19 +50,23 @@ describe('User middlewares', () => {
             const findAllSpy = jest.spyOn(db.User, 'findAll');
 
             await getAllUsersHandler(mockRequest as Request, mockResponse as Response, nextFunction);
+
             expect(findAllSpy).toHaveBeenCalled();
         });
 
         it('should call send function with correct args', async () => {
             await getAllUsersHandler(mockRequest as Request, mockResponse as Response, nextFunction);
-            expect(mockResponse.send).toBeCalledWith(await UserService.getAllUsers());
+
+            expect(mockResponse.send).toHaveBeenCalled();
         })
 
         it('should call next function in case an error', async () => {
             jest.spyOn(UserService, 'getAllUsers').mockImplementationOnce(() => {
                 throw new Error('error');
             });
+
             await getAllUsersHandler(mockRequest as Request, mockResponse as Response, nextFunction);
+
             expect(nextFunction).toHaveBeenCalled()
         });
     });
@@ -57,13 +75,11 @@ describe('User middlewares', () => {
         let mockRequest: Partial<Request>;
         let mockResponse: Partial<Response>;
         const nextFunction: NextFunction = jest.fn();
-        const existedUserId = '1';
-        const notExistedUserId = '999999999999999';
 
         beforeEach(() => {
             mockRequest = {
                 params: {
-                    id: existedUserId,
+                    id: '',
                 }
             };
             mockResponse = {
@@ -75,27 +91,29 @@ describe('User middlewares', () => {
             const getUserByIdSpy = jest.spyOn(UserService, 'getUserById');
 
             await getUserByIdHandler(mockRequest as Request<IdParam>, mockResponse as Response, nextFunction);
-            expect(getUserByIdSpy).toHaveBeenCalledWith(existedUserId);
+
+            expect(getUserByIdSpy).toHaveBeenCalled();
         });
 
         it('should call findByPk function from UserModel ', async () => {
             const findByPkSpy = jest.spyOn(db.User, 'findByPk');
 
             await getUserByIdHandler(mockRequest as Request<IdParam>, mockResponse as Response, nextFunction);
-            expect(findByPkSpy).toHaveBeenCalledWith(existedUserId);
+
+            expect(findByPkSpy).toHaveBeenCalled();
         });
 
         it('should call send function with correct args', async () => {
             await getUserByIdHandler(mockRequest as Request<IdParam>, mockResponse as Response, nextFunction);
-            expect(mockResponse.send).toBeCalledWith(await UserService.getUserById(existedUserId));
+
+            expect(mockResponse.send).toHaveBeenCalled();
         });
 
         it('should call next function if user does not exists', async () => {
-            if (mockRequest.params) {
-                mockRequest.params.id = notExistedUserId;
-            }
+            jest.spyOn(UserService, 'getUserById').mockImplementationOnce(async () => undefined);
 
             await getUserByIdHandler(mockRequest as Request<IdParam>, mockResponse as Response, nextFunction);
+
             expect(nextFunction).toHaveBeenCalled()
         });
 
@@ -103,7 +121,9 @@ describe('User middlewares', () => {
             jest.spyOn(UserService, 'getUserById').mockImplementationOnce(() => {
                 throw new Error('error');
             });
+
             await getUserByIdHandler(mockRequest as Request<IdParam>, mockResponse as Response, nextFunction);
+
             expect(nextFunction).toHaveBeenCalled()
         });
     });
@@ -131,19 +151,23 @@ describe('User middlewares', () => {
             const getAutoSuggestUsersSpy = jest.spyOn(UserService, 'getAutoSuggestUsers');
 
             await getAutoSuggestHandler(mockRequest as Request<unknown, unknown, unknown, AutoSuggestReqQuery>, mockResponse as Response, nextFunction);
-            expect(getAutoSuggestUsersSpy).toHaveBeenCalledWith(loginSubstring, limit);
+
+            expect(getAutoSuggestUsersSpy).toHaveBeenCalled();
         });
 
         it('should call send function with correct args', async () => {
             await getAutoSuggestHandler(mockRequest as Request<unknown, unknown, unknown, AutoSuggestReqQuery>, mockResponse as Response, nextFunction);
-            expect(mockResponse.send).toBeCalledWith(await UserService.getAutoSuggestUsers(loginSubstring, limit));
+
+            expect(mockResponse.send).toHaveBeenCalled();
         });
 
         it('should call next function in case an error', async () => {
             jest.spyOn(UserService, 'getAutoSuggestUsers').mockImplementationOnce(() => {
                 throw new Error('error');
             });
+
             await getAutoSuggestHandler(mockRequest as Request<unknown, unknown, unknown, AutoSuggestReqQuery>, mockResponse as Response, nextFunction);
+
             expect(nextFunction).toHaveBeenCalled()
         });
     });
@@ -152,19 +176,18 @@ describe('User middlewares', () => {
         let mockRequest: Partial<Request<Record<string, unknown>, unknown, UserReqAttrs>>;
         let mockResponse: Partial<Response>;
         const nextFunction: NextFunction = jest.fn();
-        const user = {
-            login: 'user99',
-            password: 'user5',
-            age: 18,
-            isDeleted: false
-        };
 
         beforeEach(() => {
             mockRequest = {
-                body: user
+                body: {
+                    login: 'user99',
+                    password: 'user5',
+                    age: 18,
+                    isDeleted: false
+                }
             };
             mockResponse = {
-                send: jest.fn()
+                status: jest.fn()
             };
         });
 
@@ -172,6 +195,7 @@ describe('User middlewares', () => {
             const addUserSpy = jest.spyOn(UserService, 'addUser');
 
             await addUserHandler(mockRequest as Request<Record<string, unknown>, unknown, UserReqAttrs>, mockResponse as Response, nextFunction);
+
             expect(addUserSpy).toHaveBeenCalled();
         });
 
@@ -179,14 +203,23 @@ describe('User middlewares', () => {
             const createSpy = jest.spyOn(db.User, 'create');
 
             await addUserHandler(mockRequest as Request<Record<string, unknown>, unknown, UserReqAttrs>, mockResponse as Response, nextFunction);
-            expect(createSpy).toHaveBeenCalledWith(user);
+
+            expect(createSpy).toHaveBeenCalled();
+        });
+
+        it('should call status function when user is added', async () => {
+            await addUserHandler(mockRequest as Request<Record<string, unknown>, unknown, UserReqAttrs>, mockResponse as Response, nextFunction);
+
+            expect(mockResponse.status).toHaveBeenCalled()
         });
 
         it('should call next function in case an error', async () => {
             jest.spyOn(UserService, 'addUser').mockImplementationOnce(() => {
                 throw new Error('error');
             });
+
             await addUserHandler(mockRequest as Request<Record<string, unknown>, unknown, UserReqAttrs>, mockResponse as Response, nextFunction);
+
             expect(nextFunction).toHaveBeenCalled()
         });
     });
@@ -195,24 +228,16 @@ describe('User middlewares', () => {
         let mockRequest: Partial<Request<unknown, unknown, UserAttrs>>;
         let mockResponse: Partial<Response>;
         const nextFunction: NextFunction = jest.fn();
-        const userWithExistedId = {
-            id: 1,
-            login: 'user1',
-            password: 'user5',
-            age: 18,
-            isDeleted: false
-        };
-        const userWithNonExistedId = {
-            id: 99999999999,
-            login: 'user1',
-            password: 'user5',
-            age: 18,
-            isDeleted: false
-        };
 
         beforeEach(() => {
             mockRequest = {
-                body: userWithExistedId
+                body: {
+                    id: 1,
+                    login: 'user1',
+                    password: 'user5',
+                    age: 18,
+                    isDeleted: false
+                }
             };
             mockResponse = {
                 send: jest.fn()
@@ -223,31 +248,37 @@ describe('User middlewares', () => {
             const isUserExistsSpy = jest.spyOn(UserService, 'isUserExists');
 
             await updateUserHandler(mockRequest as Request<unknown, unknown, UserAttrs>, mockResponse as Response, nextFunction);
-            expect(isUserExistsSpy).toHaveBeenCalledWith(userWithExistedId.id.toString());
+
+            expect(isUserExistsSpy).toHaveBeenCalled();
         });
 
         it('it should call updateUser method from UserService', async () => {
             const updateUserSpy = jest.spyOn(UserService, 'updateUser');
 
             await updateUserHandler(mockRequest as Request<unknown, unknown, UserAttrs>, mockResponse as Response, nextFunction);
-            expect(updateUserSpy).toHaveBeenCalledWith(userWithExistedId);
+
+            expect(updateUserSpy).toHaveBeenCalled();
         });
 
         it('should call update function from UserModel ', async () => {
             const updateSpy = jest.spyOn(db.User, 'update');
 
             await updateUserHandler(mockRequest as Request<unknown, unknown, UserAttrs>, mockResponse as Response, nextFunction);
-            expect(updateSpy).toHaveBeenCalledWith(userWithExistedId, { where: { id: userWithExistedId.id }});
+
+            expect(updateSpy).toHaveBeenCalled();
         });
 
         it('should call send function with correct args', async () => {
             await updateUserHandler(mockRequest as Request<unknown, unknown, UserAttrs>, mockResponse as Response, nextFunction);
-            expect(mockResponse.send).toHaveBeenCalledWith(userWithExistedId);
+
+            expect(mockResponse.send).toHaveBeenCalled();
         });
 
         it('should call next function if user is not exists', async () => {
-            mockRequest.body = userWithNonExistedId;
+            jest.spyOn(UserService, 'isUserExists').mockImplementationOnce(async () => false);
+
             await updateUserHandler(mockRequest as Request<unknown, unknown, UserAttrs>, mockResponse as Response, nextFunction);
+
             expect(nextFunction).toHaveBeenCalled()
         });
 
@@ -255,7 +286,9 @@ describe('User middlewares', () => {
             jest.spyOn(UserService, 'updateUser').mockImplementationOnce(() => {
                 throw new Error('error');
             });
+
             await updateUserHandler(mockRequest as Request<unknown, unknown, UserAttrs>, mockResponse as Response, nextFunction);
+
             expect(nextFunction).toHaveBeenCalled()
         });
     });
@@ -264,12 +297,11 @@ describe('User middlewares', () => {
         let mockRequest: Partial<Request>;
         let mockResponse: Partial<Response>;
         const nextFunction: NextFunction = jest.fn();
-        const userId = '1';
 
         beforeEach(() => {
             mockRequest = {
                 params: {
-                    id: userId,
+                    id: '',
                 }
             };
             mockResponse = {
@@ -281,18 +313,21 @@ describe('User middlewares', () => {
             const markUserAsDeletedSpy = jest.spyOn(UserService, 'markUserAsDeleted');
 
             await removeUserHandler(mockRequest as Request<IdParam>, mockResponse as Response, nextFunction);
-            expect(markUserAsDeletedSpy).toHaveBeenCalledWith(userId);
+
+            expect(markUserAsDeletedSpy).toHaveBeenCalled();
         });
 
         it('should call findByPk function from UserModel ', async () => {
             const findByPkSpy = jest.spyOn(db.User, 'findByPk');
 
             await removeUserHandler(mockRequest as Request<IdParam>, mockResponse as Response, nextFunction);
-            expect(findByPkSpy).toHaveBeenCalledWith(userId);
+
+            expect(findByPkSpy).toHaveBeenCalled();
         });
 
         it('should call end function after marking user as deleted', async () => {
             await removeUserHandler(mockRequest as Request<IdParam>, mockResponse as Response, nextFunction);
+
             expect(mockResponse.end).toHaveBeenCalled();
         });
 
@@ -300,7 +335,9 @@ describe('User middlewares', () => {
             jest.spyOn(UserService, 'markUserAsDeleted').mockImplementationOnce(() => {
                 throw new Error('error');
             });
+
             await removeUserHandler(mockRequest as Request<IdParam>, mockResponse as Response, nextFunction);
+
             expect(nextFunction).toHaveBeenCalled()
         });
     });

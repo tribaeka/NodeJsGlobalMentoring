@@ -8,7 +8,8 @@
     "task-1-2:start": "npm run task-1-2:build && nodemon dist/task-1-2.js",
     "start:server": "nodemon homework-2/index.ts",
     "start:pg": "docker-compose up",
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
