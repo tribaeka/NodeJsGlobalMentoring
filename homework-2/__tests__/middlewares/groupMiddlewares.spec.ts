@@ -203,6 +203,7 @@ describe('Group middlewares', () => {
             const updateGroupSpy = jest.spyOn(GroupService, 'updateGroup');
 
             await updateGroupHandler(mockRequest as Request<unknown, unknown, GroupAttrs>, mockResponse as Response, nextFunction);
+
             expect(updateGroupSpy).toHaveBeenCalled();
         });
 
