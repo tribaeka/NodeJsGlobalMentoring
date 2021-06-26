@@ -12,8 +12,8 @@ export async function userLoginValidator(
     const existedUser = await UserService.getUserByLogin(req.body.login);
 
     if (existedUser) {
-        next();
-    } else {
         res.status(httpStatus.BAD_REQUEST).send({ errors: [DUPLICATE_USER_ERROR]});
+    } else {
+        next();
     }
 }

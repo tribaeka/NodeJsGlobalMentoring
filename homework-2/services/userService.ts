@@ -1,4 +1,4 @@
-import { UserAttrs } from "../types";
+import { UserAttrs, UserReqAttrs } from "../types";
 import { db } from "../models";
 
 
@@ -27,8 +27,8 @@ class UserService {
         return <UserAttrs>userModel?.toJSON();
     }
 
-    async addUser(user: UserAttrs): Promise<number> {
-        const createdUser = await db.User.create(user);
+    async addUser(user: UserReqAttrs): Promise<number> {
+        const createdUser = await db.User.create(user as UserAttrs);
 
         return createdUser.id;
     }

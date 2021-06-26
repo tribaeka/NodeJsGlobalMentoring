@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
     addGroupHandler,
-    addUserToGroup,
+    addUserToGroupHandler,
     getAllGroupsHandler,
     getGroupByIdHandler,
     removeGroupHandler,
@@ -12,7 +12,7 @@ const router: Router = Router();
 
 router.get('/', getAllGroupsHandler);
 router.get('/:id', getGroupByIdHandler);
-router.post('/:id/user', addUserToGroup);
+router.post('/:id/user', addUserToGroupHandler);
 router.post('/', addGroupHandler);
 router.put('/', updateGroupHandler);
 router.delete('/:id', removeGroupHandler);

@@ -6,12 +6,12 @@ import { usersGroupsFactory } from "./UsersGroupsModel";
 const { DB_NAME, DB_USER, DB_PASS, DB_PORT, DB_HOST } = process.env;
 const isLoggingEnabled = process.env.ENABLE_SEQUELIZE_LOGGING === 'true';
 const sequelize  = new Sequelize(
-    DB_NAME as string,
-    DB_USER as string,
-    DB_PASS as string,
+    DB_NAME || 'postgres',
+    DB_USER || 'postgres',
+    DB_PASS || 'postgres',
     {
-        port: +(DB_PORT as string),
-        host: DB_HOST as string,
+        port: +(DB_PORT || 5433), // setting up connection to the test bd if there are no process env settings
+        host: DB_HOST || 'localhost',
         dialect: 'postgres',
         pool: {
             min: 0,

@@ -7,3 +7,5 @@ export type UserAttrs = {
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+export type UserReqAttrs = Omit<UserAttrs, 'id'>;

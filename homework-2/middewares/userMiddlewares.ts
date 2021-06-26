@@ -1,16 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import UserService  from '../services/userService';
-import { UserAttrs, IdParam } from "../types";
+import { UserAttrs, IdParam, UserReqAttrs, AutoSuggestReqQuery } from "../types";
 import { validationResult } from "express-validator";
 import httpStatus from "http-status";
 import { HttpError } from "../errors/HttpError";
 import LogService from "../services/logService";
 import { METHOD_NAMES } from "../config/loggerConstants";
 
-interface IAutoSuggestReqQuery {
-    loginSubstring: string;
-    limit: number;
-}
+
 
 export async function getAllUsersHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -38,7 +35,7 @@ export async function getUserByIdHandler(req: Request<IdParam>, res: Response, n
 }
 
 export async function getAutoSuggestHandler(
-    req: Request<unknown, unknown, unknown, IAutoSuggestReqQuery>,
+    req: Request<unknown, unknown, unknown, AutoSuggestReqQuery>,
     res: Response,
     next: NextFunction
 ): Promise<void> {
@@ -52,7 +49,7 @@ export async function getAutoSuggestHandler(
 }
 
 export async function addUserHandler(
-    req: Request<Record<string, unknown>, unknown, UserAttrs>,
+    req: Request<Record<string, unknown>, unknown, UserReqAttrs>,
     res: Response,
     next: NextFunction
 ): Promise<void> {

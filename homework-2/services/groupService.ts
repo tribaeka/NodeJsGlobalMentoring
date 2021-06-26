@@ -1,4 +1,4 @@
-import { GroupAttrs } from "../types";
+import { GroupAttrs, GroupReqAttrs } from "../types";
 import { db } from "../models";
 
 class GroupService {
@@ -20,8 +20,8 @@ class GroupService {
         return <GroupAttrs>groupModel?.toJSON();
     }
 
-    async addGroup(group: GroupAttrs): Promise<number> {
-        const createdGroup = await db.Group.create(group);
+    async addGroup(group: GroupReqAttrs): Promise<number> {
+        const createdGroup = await db.Group.create(group as GroupAttrs);
 
         return createdGroup.id;
     }
